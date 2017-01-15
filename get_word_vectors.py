@@ -25,7 +25,7 @@ def read_line_by_line(dataset_name,C,model,vec_size):
     remain = np.zeros((num_lines,), dtype=np.object)
     the_words = np.zeros((num_lines,), dtype=np.object)
     for line in f:
-        print '%d out of %d' % (count+1, num_lines)
+        print ('%d out of %d' % (count+1, num_lines))
         line = line.strip()
         line = line.translate(string.maketrans("",""), string.punctuation)
         T = line.split('\t')
@@ -56,7 +56,7 @@ def read_line_by_line(dataset_name,C,model,vec_size):
                     word_order[inner] = word
                     bow_x[inner] += 1
                     F[:,inner] = model[word]
-            except KeyError, e:
+            except KeyError:
                 #print 'Key error: "%s"' % str(e)
                 word_order[inner] = ''
             inner = inner + 1
