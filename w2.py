@@ -6,6 +6,7 @@ save_file = sys.argv[2]
 
 with open(load_file) as f:
     [X, BOW_X, y, C, words] = pickle.load(f)
+
 n = np.shape(X)
 n = n[0]
 D = np.zeros((n,n))
@@ -75,9 +76,38 @@ def get_wmd(ix):
         #Di[0,j] = emd( (X[i], BOW_X[i]), (X[j], BOW_X[j]), distance)
         Di[0,j] = helper(X[i], BOW_X[i], X[j], BOW_X[j])
         #if Di[0,j]>0.4 and min(len(X[i]), len(X[j])) >10:
-        print(ix," and ",j,": ", Di[0, j])
+        #print(ix," and ",j,": ", Di[0, j])
     return Di
 
+def kNN(D, C, k):
+    test = []
+    train = []
+    for i in range(len(C)):
+        p = r.random();
+        if (p>0.5):
+            test.append(i)
+        else:
+            train.append(i)
+    k = min(k, len(train))
+    success = 0
+    for i in test:
+        res = train[:]
+        res.sort(key=lambda j: (-D[i][j] if i<j else -D[j][i]))
+        votes = {}
+        for j in range(k):
+            if C[res[j]][0] in votes:
+                votes[C[res[j]].split()[0]] += 1
+            else:
+                votes[C[res[j]].split()[0]] = 1
+        maxVotes = 0
+        maxClass = ""
+        for key in votes.keys():
+            if maxVotes < votes[key]:
+                maxVotes = votes[key]
+                maxClass = key
+        if maxClass == C[i].split()[0]:
+            success += 1
+    print(success*1.0/len(test))
 
 def main():
     n = np.shape(X)
@@ -92,6 +122,7 @@ def main():
     for i in xrange(n):
         WMD_D[:,i] = pool_outputs[i]
 
+    kNN(WMD_D, C, 10)
     with open(save_file, 'w') as f:
         pickle.dump(WMD_D, f)
 
